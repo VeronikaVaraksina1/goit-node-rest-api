@@ -1,9 +1,10 @@
-import { createContactSchema } from "../schemas/contactsSchemas.js";
+import { createContactSchema, updateContactSchema } from "../schemas/contactsSchemas.js";
 import {
   listContacts,
   getContactById,
   removeContact,
   addContact,
+  amendContact
 } from "../services/contactsServices.js";
 
 export const getAllContacts = async (req, res, next) => {
@@ -58,20 +59,27 @@ export const createContact = async (req, res, next) => {
   }
 };
 
-/*
-PUT /api/contacts/:id
-Отримує body в json-форматі з будь-яким набором оновлених полів (name, email, phone) (всі поля вимагати в боді як 
-    обов'язкові не потрібно: якщо якесь із полів не передане, воно має зберегтись у контакта зі значенням, яке було 
-    до оновлення)
-Якщо запит на оновлення здійснено без передачі в body хоча б одного поля, повертає json формату {"message": "Body 
-must have at least one field"} зі статусом 400.
-Передані в боді поля мають бути провалідовані - для валідації створи у файлі contactsSchemas.js (знаходиться 
-    у папці schemas) схему з використанням пакета joi. Якщо передані поля мають не валідне значення, повертає 
-    json формату {"message": error.message} (де error.message - змістовне повідомлення з суттю помилки) зі статусом 400
-Якщо з body все добре, викликає функцію-сервіс updateContact, яку слід створити в файлі contactsServices.js 
-(знаходиться в папці services). Ця функція має приймати id контакта, що підлягає оновленню, та дані з body, 
-і оновити контакт у json-файлі contacts.json
-За результатом роботи функції повертає оновлений об'єкт контакту зі статусом 200.
-Якщо контакт за id не знайдено, повертає json формату {"message": "Not found"} зі статусом 404
-*/
-export const updateContact = (req, res) => {};
+export const updateContact = async (req, res, next) => {
+  try {
+    if (Object.keys(req.body).length === 0) {
+      return res.status(400).json({ message: "Body must have at least one field" });
+    }
+
+    const { error } = updateContactSchema.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({ message: error.message });
+    }
+    
+    const { id } = req.params;
+    const updatedContact = await amendContact(id, req.body);
+
+    if (!updatedContact) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    res.status(200).json(updatedContact);
+  } catch (error) {
+    next(error);
+  }
+};

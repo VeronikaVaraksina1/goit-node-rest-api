@@ -42,15 +42,43 @@ export async function removeContact(contactId) {
   return removedContact;
 }
 
-export async function addContact({name, email, phone}) {
+export async function addContact({ name, email, phone }) {
   const contacts = await readContacts();
+
   const addedContact = {
     id: crypto.randomUUID(),
     name,
     email,
     phone,
   };
+
   contacts.push(addedContact);
   await writeContacts(contacts);
   return addedContact;
+}
+
+export async function amendContact(contactId, { name, email, phone }) {
+  const contacts = await readContacts();
+  const index = contacts.findIndex((contact) => contact.id === contactId);
+
+  if (index === -1) {
+    return null;
+  }
+
+  const updatedContact = contacts[index];
+
+  if (name) {
+    updatedContact.name = name;
+  }
+
+  if (email) {
+    updatedContact.email = email;
+  }
+
+  if (phone) {
+    updatedContact.phone = phone;
+  }
+  
+  await writeContacts(contacts);
+  return updatedContact;
 }
