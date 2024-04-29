@@ -6,6 +6,7 @@ import {
   addContact,
   amendContact
 } from "../services/contactsServices.js";
+import HttpError from "../helpers/HttpError.js";
 
 export const getAllContacts = async (req, res, next) => {
   try {
@@ -21,7 +22,7 @@ export const getOneContact = async (req, res, next) => {
     const { id } = req.params;
     const contact = await getContactById(id);
     if (!contact) {
-      return res.status(404).json({ message: "Not found" });
+      throw HttpError(404);
     }
     return res.status(200).json(contact);
   } catch (error) {
@@ -35,7 +36,7 @@ export const deleteContact = async (req, res, next) => {
     const removedContact = await removeContact(id);
 
     if (!removedContact) {
-      return res.status(404).json({ message: "Not found" });
+      throw HttpError(404);
     }
 
     return res.status(200).json(removedContact);
@@ -49,7 +50,7 @@ export const createContact = async (req, res, next) => {
     const { error } = createContactSchema.validate(req.body);
 
     if (error) {
-      return res.status(400).json({ message: error.message });
+      throw HttpError(400, error.message);
     }
 
     const newContact = await addContact(req.body);
@@ -62,20 +63,20 @@ export const createContact = async (req, res, next) => {
 export const updateContact = async (req, res, next) => {
   try {
     if (Object.keys(req.body).length === 0) {
-      return res.status(400).json({ message: "Body must have at least one field" });
+      throw HttpError(400, "Body must have at least one field");
     }
 
     const { error } = updateContactSchema.validate(req.body);
 
     if (error) {
-      return res.status(400).json({ message: error.message });
+      throw HttpError(400, error.message);
     }
     
     const { id } = req.params;
     const updatedContact = await amendContact(id, req.body);
 
     if (!updatedContact) {
-      return res.status(404).json({ message: "Not found" });
+      throw HttpError(404);
     }
 
     res.status(200).json(updatedContact);
