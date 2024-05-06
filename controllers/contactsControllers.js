@@ -68,14 +68,10 @@ export const updateContact = async (req, res, next) => {
   }
 };
 
-export const patchContact = async (req, res, next) => {
+export const updateFavorite = async (req, res, next) => {
   const { id } = req.params;
 
-  try {
-    if (!Object.keys(req.body).includes('favorite')) {
-      throw HttpError(400, "Body must have a 'favorite' field");
-    }
-    
+  try {    
     const updatedContact = await Contact.findByIdAndUpdate(id, req.body, {new: true});
 
     if (!updatedContact) {

@@ -16,4 +16,4 @@ export const updateContactSchema = Joi.object({
 
 export const patchContactSchema = Joi.object({
   favorite: Joi.boolean().required(),
-}).min(1).message('Body must have a "favorite" field');
+});
