@@ -45,12 +45,6 @@ export const deleteContact = async (req, res, next) => {
 
 export const createContact = async (req, res, next) => {
   try {
-    const { error } = createContactSchema.validate(req.body);
-
-    if (error) {
-      throw HttpError(400, error.message);
-    }
-
     const newContact = await Contact.create(req.body);
     return res.status(201).json(newContact);
   } catch (error) {
@@ -62,12 +56,6 @@ export const updateContact = async (req, res, next) => {
   const { id } = req.params;
   
   try {
-    const { error } = updateContactSchema.validate(req.body);
-
-    if (error) {
-      throw HttpError(400, error.message);
-    }
-    
     const updatedContact = await Contact.findByIdAndUpdate(id, req.body, {new: true});
 
     if (!updatedContact) {
@@ -86,13 +74,6 @@ export const patchContact = async (req, res, next) => {
   try {
     if (!Object.keys(req.body).includes('favorite')) {
       throw HttpError(400, "Body must have a 'favorite' field");
-    }
-
-    const { error } = patchContactSchema.validate(req.body);
-    
-
-    if (error) {
-      throw HttpError(400, error.message);
     }
     
     const updatedContact = await Contact.findByIdAndUpdate(id, req.body, {new: true});
