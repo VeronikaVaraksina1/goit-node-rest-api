@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+const { Schema } = mongoose;
 
 const emailRegexp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -26,7 +27,7 @@ const userSchema = new mongoose.Schema(
     token: {
       type: String,
       default: null,
-    },
+    }
   },
   {
     versionKey: false,

@@ -4,9 +4,10 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 
+import { authenticate } from './helpers/authenticate.js';
 import contactsRouter from "./routes/contactsRouter.js";
 import usersRouter from "./routes/usersRouter.js";
-import './db/db.js'
+import './db/server.js'
 
 const app = express();
 
@@ -14,7 +15,7 @@ app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/contacts", contactsRouter);
+app.use("/api/contacts", authenticate, contactsRouter);
 app.use("/api/users", usersRouter);
 
 app.use((_, res) => {
