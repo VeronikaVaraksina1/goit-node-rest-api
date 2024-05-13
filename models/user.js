@@ -5,6 +5,9 @@ const emailRegexp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 const userSchema = new mongoose.Schema(
   {
+    name: {
+      type: String,
+    },
     password: {
       type: String,
       required: [true, "Password is required"],
