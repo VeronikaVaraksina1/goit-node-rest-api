@@ -9,9 +9,11 @@ const storage = multer.diskStorage({
     filename(req, file, cb) {
         const extname = path.extname(file.originalname);
         const baseName = path.basename(file.originalname, extname);
+        const correctedBaseName = baseName.replace(/\s+/g, '-');
         const suffix = crypto. randomUUID();
 
-        cb(null, `${baseName}-${suffix}${extname}`);
+        cb(null, `${correctedBaseName}-${suffix}${extname}`);
     }
-})
+});
+
  export const update = multer({storage});
