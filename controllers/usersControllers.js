@@ -1,8 +1,12 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import fs from "fs/promises";
+import gravatar from "gravatar";
+import Jimp from "jimp";
 
 import HttpError from "../helpers/HttpError.js";
 import { User } from "../models/user.js";
+import path from "path";
 
 const { SECRET_KEY } = process.env;
 
@@ -17,8 +21,9 @@ export const register = async (req, res, next) => {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
+    const avatarURL = gravatar.url(email);
 
-    await User.create({ ...req.body, password: passwordHash });
+    await User.create({ ...req.body, password: passwordHash, avatarURL });
 
     return res.status(201).json({ user: {email, subscription: "starter"} })
 
@@ -81,4 +86,43 @@ export const currentUser = async (req, res, next) => {
   }
 
   res.status(200).json({email: user.email, subscription: user.subscription});
+}
+
+export const updateAvatar = async (req, res, next) => {
+  try {
+    const publicDir = path.resolve("public/avatars", req.file.filename);
+
+    await fs.rename(req.file.path, publicDir);
+
+    const avatar = await Jimp.read(publicDir);
+    await avatar.resize(250, 250).writeAsync(publicDir);
+
+    const user = await User.findByIdAndUpdate(req.user.id, { avatarURL: `/avatars/${req.file.filename}` }, { new: true });
+
+    if (!user) {
+      throw HttpError(404, "User not found");
+    }
+
+    res.status(200).json({ avatarURL: user.avatarURL });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export const getAvatar = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      throw HttpError(404, "User not found");
+    }
+
+    if (!user.avatarURL) {
+      throw HttpError(404, "Avatar not found");
+    }
+
+    res.sendFile(path.resolve('public/avatars', user.avatarURL));
+  } catch (error) {
+    next(error);
+  }
 }

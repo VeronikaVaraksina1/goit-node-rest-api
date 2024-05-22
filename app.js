@@ -1,19 +1,21 @@
-import 'dotenv/config';
+import "dotenv/config";
 
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
+import path from "path";
 
-import { authenticate } from './helpers/authenticate.js';
+import { authenticate } from "./helpers/authenticate.js";
 import contactsRouter from "./routes/contactsRouter.js";
 import usersRouter from "./routes/usersRouter.js";
-import './db/server.js'
+import "./db/server.js";
 
 const app = express();
 
 app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
+app.use("/avatars", express.static(path.resolve("public/avatars")));
 
 app.use("/api/contacts", authenticate, contactsRouter);
 app.use("/api/users", usersRouter);
