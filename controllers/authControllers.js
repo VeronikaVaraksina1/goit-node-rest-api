@@ -1,7 +1,8 @@
 import bcrypt from "bcrypt";
-import crypto from "node:crypto";
+
 import jwt from "jsonwebtoken";
 import gravatar from "gravatar";
+import { nanoid } from "nanoid";
 
 import HttpError from "../helpers/HttpError.js";
 import { sendMail } from "../helpers/verifyEmail.js";
@@ -23,7 +24,7 @@ export const register = async (req, res, next) => {
 
     const avatarURL = gravatar.url(email);
     
-    const verificationToken = crypto.randomUUID();
+    const verificationToken = nanoid();
 
     await User.create({ 
       ...req.body, 
@@ -36,8 +37,8 @@ export const register = async (req, res, next) => {
       to: email,
       from: "plaguemoon@gmail.com",
       subject: "Welcome to Contact Kingdom!",
-      html: `Confirm your email address by following the <a href="http://localhost:3000/api/users/verify/${verificationToken}">link</a>`,
-      text: `Confirm your email address by open the link: http://localhost:3000/api/users/verify/${verificationToken}`,
+      html: `<h2 style="color: blue">Confirm your email address by following the <a href="http://localhost:3000/users/verify/${verificationToken}">link</a></h2>`,
+      text: `Confirm your email address by open the link: http://localhost:3000/users/verify/${verificationToken}`,
     })
 
     return res.status(201).json({ user: {email, subscription: "starter"} })
