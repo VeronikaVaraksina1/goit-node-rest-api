@@ -6,7 +6,6 @@ import { getAvatar, resendVerificationEmail, updateAvatar, verify } from "../con
 import { validateBody } from "../helpers/validateBody.js";
 import { verifyUserSchema } from "../schemas/usersSchemas.js";
 
-
 const usersRouter = express.Router();
 
 usersRouter.get("/avatar", authenticate, getAvatar);

@@ -37,9 +37,9 @@ export const authenticate = async (req, res, next) => {
         id: decode.id,
         name: decode.name,
       };
-      
+
       next();
-    } catch(error) {
+    } catch (error) {
       next(error);
     }
   });
