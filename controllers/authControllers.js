@@ -33,9 +33,9 @@ export const register = async (req, res, next) => {
       verificationToken, 
     });
 
-    sendMail({
+    await sendMail({
       to: email,
-      from: "plaguemoon@gmail.com",
+      from: process.env.EMAIL_SENDER,
       subject: "Welcome to Contact Kingdom!",
       html: `<h2 style="color: blue">Confirm your email address by following the <a href="http://localhost:3000/users/verify/${verificationToken}">link</a></h2>`,
       text: `Confirm your email address by open the link: http://localhost:3000/users/verify/${verificationToken}`,
