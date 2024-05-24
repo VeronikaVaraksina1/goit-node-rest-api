@@ -70,6 +70,10 @@ export const updateAvatar = async (req, res, next) => {
         
       const user = await User.findOneAndUpdate({ email }, { verificationToken }, {new: true });
   
+      if (!user) {
+        return next(HttpError(404, "User not found"));
+      }
+
       if (user.verify) {
         return next(HttpError(400, "Verification has already been passed"));
       }
